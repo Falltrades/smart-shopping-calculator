@@ -3,23 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Toilet Paper Calculator</title>
+  <title>Smart Shopping Calculator</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #f5f2eb;
-      --surface: #fffdf8;
-      --border: #d9d3c4;
-      --text: #1a1814;
-      --muted: #7a7468;
-      --accent: #2d6a4f;
-      --accent-light: #e8f4ef;
-      --blue: #1a4a7a;
-      --blue-light: #e8f0f8;
-      --warn: #7a4a1a;
-      --warn-light: #f8f0e8;
+      --bg: #f0f0ed;
+      --surface: #fafaf7;
+      --border: #d4d0c8;
+      --text: #18181a;
+      --muted: #76746e;
+      --a: #1a5c3a;
+      --a-light: #e6f2ec;
+      --b: #1a3a7a;
+      --b-light: #e6ecf8;
+      --c: #7a3a1a;
+      --c-light: #f8ece6;
+      --d: #5a1a7a;
+      --d-light: #f0e6f8;
+      --win: #2d5a1a;
+      --win-bg: #eaf2e6;
       --mono: 'DM Mono', monospace;
       --sans: 'DM Sans', sans-serif;
     }
@@ -29,40 +33,109 @@
       color: var(--text);
       font-family: var(--sans);
       min-height: 100vh;
-      padding: 2rem 1rem;
+      padding: 2rem 1rem 3rem;
     }
 
-    .container {
-      max-width: 680px;
-      margin: 0 auto;
-    }
+    .container { max-width: 800px; margin: 0 auto; }
 
+    /* ── HEADER ── */
     header {
       margin-bottom: 2rem;
-      border-bottom: 1px solid var(--border);
       padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
     }
-
     header h1 {
       font-family: var(--mono);
       font-size: 1.4rem;
       font-weight: 500;
       letter-spacing: -0.02em;
     }
+    header p { font-size: 0.875rem; color: var(--muted); margin-top: 0.35rem; }
 
-    header p {
-      font-size: 0.875rem;
-      color: var(--muted);
-      margin-top: 0.35rem;
-    }
-
-    .method-tabs {
+    /* ── NAV TABS ── */
+    .nav-tabs {
       display: flex;
       gap: 6px;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0;
+    }
+    .nav-tab {
+      padding: 8px 20px;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      border: 1px solid transparent;
+      border-bottom: none;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      bottom: -1px;
+    }
+    .nav-tab:hover { color: var(--text); }
+    .nav-tab.active {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--border);
+      border-bottom-color: var(--surface);
+      font-weight: 500;
     }
 
+    .page { display: none; }
+    .page.visible { display: block; }
+
+    /* ── SHARED FIELD STYLES ── */
+    .field { margin-bottom: 8px; }
+    .field label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin-bottom: 3px;
+    }
+    .field input {
+      width: 100%;
+      padding: 7px 10px;
+      font-family: var(--mono);
+      font-size: 0.83rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus { border-color: var(--text); }
+    .divider { height: 1px; background: var(--border); margin: 10px 0; }
+
+    /* ── RESULT / SUMMARY SHARED ── */
+    .results-summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-top: 0.5rem;
+    }
+    .summary-title {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .empty {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 1.5rem;
+    }
+
+    /* ══════════════════════════════
+       PAGE 1 — TOILET PAPER
+    ══════════════════════════════ */
+    .method-tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; flex-wrap: wrap; }
     .tab-btn {
       padding: 7px 16px;
       font-family: var(--mono);
@@ -74,7 +147,6 @@
       cursor: pointer;
       transition: all 0.15s;
     }
-
     .tab-btn:hover { color: var(--text); border-color: var(--text); }
     .tab-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
 
@@ -84,14 +156,12 @@
       gap: 14px;
       margin-bottom: 1.5rem;
     }
-
     .roll-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 1.25rem;
     }
-
     .roll-card h3 {
       font-family: var(--mono);
       font-size: 0.85rem;
@@ -101,87 +171,27 @@
       align-items: center;
       gap: 8px;
     }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .dot-a { background: var(--a); }
+    .dot-b { background: var(--b); }
 
-    .dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-    .dot-a { background: var(--accent); }
-    .dot-b { background: var(--blue); }
+    .tp-section { display: none; }
+    .tp-section.visible { display: block; }
 
-    .field { margin-bottom: 10px; }
-
-    .field label {
-      display: block;
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-bottom: 4px;
-      font-family: var(--mono);
-    }
-
-    .field input {
-      width: 100%;
-      padding: 7px 10px;
-      font-family: var(--mono);
-      font-size: 0.85rem;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      background: var(--bg);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.15s;
-    }
-
-    .field input:focus { border-color: var(--text); }
-
-    .section-fields { display: none; }
-    .section-fields.visible { display: block; }
-
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 10px 0;
-    }
-
-    .results {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.25rem;
-    }
-
-    .results-grid {
+    .tp-results {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       margin-bottom: 1rem;
     }
-
-    .metric {
+    .tp-metric {
       background: var(--bg);
       border-radius: 6px;
       padding: 0.875rem;
     }
-
-    .metric .m-label {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-
-    .metric .m-value {
-      font-family: var(--mono);
-      font-size: 1.3rem;
-      font-weight: 500;
-    }
-
-    .metric .m-sub {
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-top: 3px;
-    }
+    .tp-metric .m-label { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-bottom: 4px; }
+    .tp-metric .m-value { font-family: var(--mono); font-size: 1.3rem; font-weight: 500; }
+    .tp-metric .m-sub { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
 
     .winner-bar {
       border-radius: 6px;
@@ -191,212 +201,488 @@
       font-weight: 500;
       text-align: center;
     }
+    .winner-a { background: var(--a-light); color: var(--a); }
+    .winner-b { background: var(--b-light); color: var(--b); }
+    .winner-tie { background: #f5f0e8; color: var(--muted); }
 
-    .winner-a { background: var(--accent-light); color: var(--accent); }
-    .winner-b { background: var(--blue-light); color: var(--blue); }
-    .winner-tie { background: var(--warn-light); color: var(--warn); }
-
-    .empty-state {
-      text-align: center;
+    /* ══════════════════════════════
+       PAGE 2 — PROTEIN
+    ══════════════════════════════ */
+    .pro-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .pro-controls label { font-size: 0.8rem; color: var(--muted); font-family: var(--mono); }
+    .add-btn {
+      padding: 7px 16px;
       font-family: var(--mono);
       font-size: 0.8rem;
-      color: var(--muted);
-      padding: 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .add-btn:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+    .powders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+    .powder-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      transition: border-color 0.2s;
+    }
+    .powder-card.winner { border-color: var(--win); border-width: 2px; }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.875rem;
+    }
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+    .remove-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 1rem; line-height: 1;
+      padding: 0 2px; transition: color 0.15s;
+    }
+    .remove-btn:hover { color: var(--text); }
+    .card-result {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+    }
+    .cpg { font-size: 1.25rem; font-weight: 500; }
+    .cpg-label { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+    .extra { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+    .winner-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      padding: 2px 8px;
+      background: var(--win-bg);
+      color: var(--win);
+      border-radius: 3px;
+      font-family: var(--mono);
+      margin-top: 5px;
+    }
+    .rank-list { list-style: none; }
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+    }
+    .rank-item:last-child { border-bottom: none; }
+    .rank-num { font-size: 0.72rem; color: var(--muted); min-width: 18px; }
+    .rank-name { flex: 1; }
+    .rank-cpg { font-weight: 500; }
+    .rank-savings {
+      font-size: 0.72rem; padding: 2px 7px;
+      border-radius: 3px; background: var(--win-bg); color: var(--win);
+    }
+    .rank-more {
+      font-size: 0.72rem; padding: 2px 7px;
+      border-radius: 3px; background: #eeebe5; color: var(--muted);
     }
 
+    /* ── FOOTER ── */
     footer {
       margin-top: 2rem;
       padding-top: 1rem;
       border-top: 1px solid var(--border);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--muted);
       font-family: var(--mono);
     }
 
-    @media (max-width: 480px) {
-      .rolls-grid, .results-grid { grid-template-columns: 1fr; }
+    @media (max-width: 520px) {
+      .rolls-grid, .tp-results { grid-template-columns: 1fr; }
+      .powders-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 360px) {
+      .powders-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 <div class="container">
+
   <header>
-    <h1>🧻 toilet paper calculator</h1>
-    <p>Find out which roll gives you more paper per euro.</p>
+    <h1>🛒 smart shopping calculator</h1>
+    <p>Stop guessing — compare products by what actually matters.</p>
   </header>
 
-  <div class="method-tabs">
-    <button class="tab-btn active" onclick="setMethod('weight', this)">By weight</button>
-    <button class="tab-btn" onclick="setMethod('sheets', this)">By sheet count</button>
-    <button class="tab-btn" onclick="setMethod('diameter', this)">By diameter</button>
-  </div>
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('tp', this)">🧻 toilet paper</button>
+    <button class="nav-tab" onclick="showPage('pro', this)">💪 protein powder</button>
+  </nav>
 
-  <div class="rolls-grid">
-    <!-- Roll A -->
-    <div class="roll-card">
-      <h3><span class="dot dot-a"></span> Roll A</h3>
-      <div class="field">
-        <label>Price (€)</label>
-        <input type="number" id="a-price" value="1.50" min="0" step="0.01" oninput="calculate()">
-      </div>
-      <div class="field">
-        <label>Rolls in pack</label>
-        <input type="number" id="a-rolls" value="1" min="1" step="1" oninput="calculate()">
-      </div>
-      <div class="divider"></div>
+  <!-- ══════════════════════════
+       PAGE: TOILET PAPER
+  ══════════════════════════ -->
+  <div class="page visible" id="page-tp">
 
-      <div class="section-fields visible" id="weight-a">
-        <div class="field"><label>Total roll weight (g)</label>
-          <input type="number" id="a-total-w" value="120" min="0" oninput="calculate()"></div>
-        <div class="field"><label>Tube weight (g)</label>
-          <input type="number" id="a-tube-w" value="15" min="0" oninput="calculate()"></div>
+    <div class="method-tabs">
+      <button class="tab-btn active" onclick="setTpMethod('weight', this)">By weight</button>
+      <button class="tab-btn" onclick="setTpMethod('sheets', this)">By sheet count</button>
+      <button class="tab-btn" onclick="setTpMethod('diameter', this)">By diameter</button>
+    </div>
+
+    <div class="rolls-grid">
+      <!-- Roll A -->
+      <div class="roll-card">
+        <h3><span class="dot dot-a"></span> Roll A</h3>
+        <div class="field"><label>Price (€)</label>
+          <input type="number" id="a-price" value="1.50" min="0" step="0.01" oninput="tpCalc()"></div>
+        <div class="field"><label>Rolls in pack</label>
+          <input type="number" id="a-rolls" value="1" min="1" step="1" oninput="tpCalc()"></div>
+        <div class="divider"></div>
+
+        <div class="tp-section visible" id="tp-weight-a">
+          <div class="field"><label>Total roll weight (g)</label>
+            <input type="number" id="a-total-w" value="120" min="0" oninput="tpCalc()"></div>
+          <div class="field"><label>Tube weight (g)</label>
+            <input type="number" id="a-tube-w" value="15" min="0" oninput="tpCalc()"></div>
+        </div>
+        <div class="tp-section" id="tp-sheets-a">
+          <div class="field"><label>Sheet count</label>
+            <input type="number" id="a-sheets" value="200" min="1" oninput="tpCalc()"></div>
+          <div class="field"><label>Sheet length (mm)</label>
+            <input type="number" id="a-sheet-len" value="113" min="1" oninput="tpCalc()"></div>
+          <div class="field"><label>Sheet width (mm)</label>
+            <input type="number" id="a-sheet-wid" value="100" min="1" oninput="tpCalc()"></div>
+        </div>
+        <div class="tp-section" id="tp-diameter-a">
+          <div class="field"><label>Outer diameter (mm)</label>
+            <input type="number" id="a-outer" value="110" min="1" oninput="tpCalc()"></div>
+          <div class="field"><label>Tube diameter (mm)</label>
+            <input type="number" id="a-inner" value="40" min="1" oninput="tpCalc()"></div>
+          <div class="field"><label>Roll width (mm)</label>
+            <input type="number" id="a-width" value="100" min="1" oninput="tpCalc()"></div>
+        </div>
       </div>
 
-      <div class="section-fields" id="sheets-a">
-        <div class="field"><label>Sheet count</label>
-          <input type="number" id="a-sheets" value="200" min="1" oninput="calculate()"></div>
-        <div class="field"><label>Sheet length (mm)</label>
-          <input type="number" id="a-sheet-len" value="113" min="1" oninput="calculate()"></div>
-        <div class="field"><label>Sheet width (mm)</label>
-          <input type="number" id="a-sheet-wid" value="100" min="1" oninput="calculate()"></div>
-      </div>
+      <!-- Roll B -->
+      <div class="roll-card">
+        <h3><span class="dot dot-b"></span> Roll B</h3>
+        <div class="field"><label>Price (€)</label>
+          <input type="number" id="b-price" value="2.20" min="0" step="0.01" oninput="tpCalc()"></div>
+        <div class="field"><label>Rolls in pack</label>
+          <input type="number" id="b-rolls" value="1" min="1" step="1" oninput="tpCalc()"></div>
+        <div class="divider"></div>
 
-      <div class="section-fields" id="diameter-a">
-        <div class="field"><label>Outer diameter (mm)</label>
-          <input type="number" id="a-outer" value="110" min="1" oninput="calculate()"></div>
-        <div class="field"><label>Tube diameter (mm)</label>
-          <input type="number" id="a-inner" value="40" min="1" oninput="calculate()"></div>
-        <div class="field"><label>Roll width (mm)</label>
-          <input type="number" id="a-width" value="100" min="1" oninput="calculate()"></div>
+        <div class="tp-section visible" id="tp-weight-b">
+          <div class="field"><label>Total roll weight (g)</label>
+            <input type="number" id="b-total-w" value="185" min="0" oninput="tpCalc()"></div>
+          <div class="field"><label>Tube weight (g)</label>
+            <input type="number" id="b-tube-w" value="15" min="0" oninput="tpCalc()"></div>
+        </div>
+        <div class="tp-section" id="tp-sheets-b">
+          <div class="field"><label>Sheet count</label>
+            <input type="number" id="b-sheets" value="280" min="1" oninput="tpCalc()"></div>
+          <div class="field"><label>Sheet length (mm)</label>
+            <input type="number" id="b-sheet-len" value="100" min="1" oninput="tpCalc()"></div>
+          <div class="field"><label>Sheet width (mm)</label>
+            <input type="number" id="b-sheet-wid" value="100" min="1" oninput="tpCalc()"></div>
+        </div>
+        <div class="tp-section" id="tp-diameter-b">
+          <div class="field"><label>Outer diameter (mm)</label>
+            <input type="number" id="b-outer" value="130" min="1" oninput="tpCalc()"></div>
+          <div class="field"><label>Tube diameter (mm)</label>
+            <input type="number" id="b-inner" value="40" min="1" oninput="tpCalc()"></div>
+          <div class="field"><label>Roll width (mm)</label>
+            <input type="number" id="b-width" value="100" min="1" oninput="tpCalc()"></div>
+        </div>
       </div>
     </div>
 
-    <!-- Roll B -->
-    <div class="roll-card">
-      <h3><span class="dot dot-b"></span> Roll B</h3>
-      <div class="field">
-        <label>Price (€)</label>
-        <input type="number" id="b-price" value="2.20" min="0" step="0.01" oninput="calculate()">
-      </div>
-      <div class="field">
-        <label>Rolls in pack</label>
-        <input type="number" id="b-rolls" value="1" min="1" step="1" oninput="calculate()">
-      </div>
-      <div class="divider"></div>
-
-      <div class="section-fields visible" id="weight-b">
-        <div class="field"><label>Total roll weight (g)</label>
-          <input type="number" id="b-total-w" value="185" min="0" oninput="calculate()"></div>
-        <div class="field"><label>Tube weight (g)</label>
-          <input type="number" id="b-tube-w" value="15" min="0" oninput="calculate()"></div>
-      </div>
-
-      <div class="section-fields" id="sheets-b">
-        <div class="field"><label>Sheet count</label>
-          <input type="number" id="b-sheets" value="280" min="1" oninput="calculate()"></div>
-        <div class="field"><label>Sheet length (mm)</label>
-          <input type="number" id="b-sheet-len" value="100" min="1" oninput="calculate()"></div>
-        <div class="field"><label>Sheet width (mm)</label>
-          <input type="number" id="b-sheet-wid" value="100" min="1" oninput="calculate()"></div>
-      </div>
-
-      <div class="section-fields" id="diameter-b">
-        <div class="field"><label>Outer diameter (mm)</label>
-          <input type="number" id="b-outer" value="130" min="1" oninput="calculate()"></div>
-        <div class="field"><label>Tube diameter (mm)</label>
-          <input type="number" id="b-inner" value="40" min="1" oninput="calculate()"></div>
-        <div class="field"><label>Roll width (mm)</label>
-          <input type="number" id="b-width" value="100" min="1" oninput="calculate()"></div>
-      </div>
+    <div class="results-summary" id="tp-results">
+      <div class="empty">enter values above to compare</div>
     </div>
   </div>
 
-  <div class="results">
-    <div id="results-inner"><div class="empty-state">enter values above to compare</div></div>
+  <!-- ══════════════════════════
+       PAGE: PROTEIN POWDER
+  ══════════════════════════ -->
+  <div class="page" id="page-pro">
+    <div class="pro-controls">
+      <button class="add-btn" id="pro-add-btn" onclick="proAddPowder()">+ add powder</button>
+      <label id="pro-count-label"></label>
+    </div>
+    <div class="powders-grid" id="pro-grid"></div>
+    <div class="results-summary" id="pro-summary">
+      <div class="empty">add at least two powders to compare</div>
+    </div>
   </div>
 
   <footer>no data is sent anywhere · runs entirely in your browser</footer>
 </div>
 
 <script>
-  let method = 'weight';
+/* ══════════════════════════════════
+   NAV
+══════════════════════════════════ */
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('visible'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('visible');
+  btn.classList.add('active');
+}
 
-  function setMethod(m, btn) {
-    method = m;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    ['weight','sheets','diameter'].forEach(sec => {
-      ['a','b'].forEach(roll => {
-        const el = document.getElementById(sec + '-' + roll);
-        if (el) el.classList.toggle('visible', sec === m);
-      });
+/* ══════════════════════════════════
+   TOILET PAPER
+══════════════════════════════════ */
+let tpMethod = 'weight';
+
+function setTpMethod(m, btn) {
+  tpMethod = m;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['weight','sheets','diameter'].forEach(sec => {
+    ['a','b'].forEach(roll => {
+      const el = document.getElementById('tp-' + sec + '-' + roll);
+      if (el) el.classList.toggle('visible', sec === m);
     });
-    calculate();
+  });
+  tpCalc();
+}
+
+function tv(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function tfmt(n) { return n < 0.01 ? n.toFixed(5) : n < 0.1 ? n.toFixed(4) : n.toFixed(3); }
+
+function tpCalc() {
+  const aPrice = tv('a-price') / Math.max(1, tv('a-rolls'));
+  const bPrice = tv('b-price') / Math.max(1, tv('b-rolls'));
+  let aUnit, bUnit, unitLabel, aDetail, bDetail;
+
+  if (tpMethod === 'weight') {
+    const aG = tv('a-total-w') - tv('a-tube-w');
+    const bG = tv('b-total-w') - tv('b-tube-w');
+    aUnit = aG > 0 ? aPrice / aG : null;
+    bUnit = bG > 0 ? bPrice / bG : null;
+    unitLabel = '€ / gram of paper';
+    aDetail = aG > 0 ? aG.toFixed(0) + 'g paper' : '—';
+    bDetail = bG > 0 ? bG.toFixed(0) + 'g paper' : '—';
+  } else if (tpMethod === 'sheets') {
+    const aA = tv('a-sheets') * tv('a-sheet-len') * tv('a-sheet-wid') / 10000;
+    const bA = tv('b-sheets') * tv('b-sheet-len') * tv('b-sheet-wid') / 10000;
+    aUnit = aA > 0 ? (aPrice / aA) * 100 : null;
+    bUnit = bA > 0 ? (bPrice / bA) * 100 : null;
+    unitLabel = '€ / 100 cm²';
+    aDetail = aA > 0 ? aA.toFixed(0) + ' cm²' : '—';
+    bDetail = bA > 0 ? bA.toFixed(0) + ' cm²' : '—';
+  } else {
+    const aV = Math.PI * ((tv('a-outer')/2)**2 - (tv('a-inner')/2)**2) * tv('a-width') / 1000;
+    const bV = Math.PI * ((tv('b-outer')/2)**2 - (tv('b-inner')/2)**2) * tv('b-width') / 1000;
+    aUnit = aV > 0 ? aPrice / aV : null;
+    bUnit = bV > 0 ? bPrice / bV : null;
+    unitLabel = '€ / cm³ of paper';
+    aDetail = aV > 0 ? aV.toFixed(0) + ' cm³' : '—';
+    bDetail = bV > 0 ? bV.toFixed(0) + ' cm³' : '—';
   }
 
-  function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
+  const el = document.getElementById('tp-results');
+  if (!aUnit || !bUnit || isNaN(aUnit) || isNaN(bUnit)) {
+    el.innerHTML = '<div class="empty">enter valid values above to compare</div>';
+    return;
+  }
 
-  function fmt(n) { return n < 0.01 ? n.toFixed(5) : n < 0.1 ? n.toFixed(4) : n.toFixed(3); }
+  const winner = aUnit < bUnit ? 'a' : bUnit < aUnit ? 'b' : 'tie';
+  const savings = (Math.abs(aUnit - bUnit) / Math.max(aUnit, bUnit) * 100).toFixed(1);
+  const winnerText = winner === 'a' ? `Roll A is cheaper by ${savings}%`
+    : winner === 'b' ? `Roll B is cheaper by ${savings}%`
+    : 'Equal value — no difference';
+  const winnerClass = winner === 'a' ? 'winner-a' : winner === 'b' ? 'winner-b' : 'winner-tie';
 
-  function calculate() {
-    const aPrice = v('a-price') / Math.max(1, v('a-rolls'));
-    const bPrice = v('b-price') / Math.max(1, v('b-rolls'));
-    let aUnit, bUnit, unitLabel, aDetail, bDetail;
-
-    if (method === 'weight') {
-      const aG = v('a-total-w') - v('a-tube-w');
-      const bG = v('b-total-w') - v('b-tube-w');
-      aUnit = aG > 0 ? aPrice / aG : null;
-      bUnit = bG > 0 ? bPrice / bG : null;
-      unitLabel = '€ / gram of paper';
-      aDetail = aG > 0 ? aG.toFixed(0) + 'g paper' : '—';
-      bDetail = bG > 0 ? bG.toFixed(0) + 'g paper' : '—';
-    } else if (method === 'sheets') {
-      const aA = v('a-sheets') * v('a-sheet-len') * v('a-sheet-wid') / 10000;
-      const bA = v('b-sheets') * v('b-sheet-len') * v('b-sheet-wid') / 10000;
-      aUnit = aA > 0 ? (aPrice / aA) * 100 : null;
-      bUnit = bA > 0 ? (bPrice / bA) * 100 : null;
-      unitLabel = '€ / 100 cm²';
-      aDetail = aA > 0 ? aA.toFixed(0) + ' cm²' : '—';
-      bDetail = bA > 0 ? bA.toFixed(0) + ' cm²' : '—';
-    } else {
-      const aV = Math.PI * ((v('a-outer')/2)**2 - (v('a-inner')/2)**2) * v('a-width') / 1000;
-      const bV = Math.PI * ((v('b-outer')/2)**2 - (v('b-inner')/2)**2) * v('b-width') / 1000;
-      aUnit = aV > 0 ? aPrice / aV : null;
-      bUnit = bV > 0 ? bPrice / bV : null;
-      unitLabel = '€ / cm³ of paper';
-      aDetail = aV > 0 ? aV.toFixed(0) + ' cm³' : '—';
-      bDetail = bV > 0 ? bV.toFixed(0) + ' cm³' : '—';
-    }
-
-    if (!aUnit || !bUnit || isNaN(aUnit) || isNaN(bUnit)) {
-      document.getElementById('results-inner').innerHTML = '<div class="empty-state">enter valid values above to compare</div>';
-      return;
-    }
-
-    const winner = aUnit < bUnit ? 'a' : bUnit < aUnit ? 'b' : 'tie';
-    const savings = (Math.abs(aUnit - bUnit) / Math.max(aUnit, bUnit) * 100).toFixed(1);
-    const winnerText = winner === 'a' ? `Roll A is cheaper by ${savings}%` : winner === 'b' ? `Roll B is cheaper by ${savings}%` : 'Equal value — no difference';
-    const winnerClass = winner === 'a' ? 'winner-a' : winner === 'b' ? 'winner-b' : 'winner-tie';
-
-    document.getElementById('results-inner').innerHTML = `
-      <div class="results-grid">
-        <div class="metric">
-          <div class="m-label">Roll A · ${unitLabel}</div>
-          <div class="m-value" style="color: ${winner==='a' ? 'var(--accent)' : 'var(--text)'}">${fmt(aUnit)}</div>
-          <div class="m-sub">${aDetail} · €${(v('a-price')/Math.max(1,v('a-rolls'))).toFixed(2)}/roll</div>
-        </div>
-        <div class="metric">
-          <div class="m-label">Roll B · ${unitLabel}</div>
-          <div class="m-value" style="color: ${winner==='b' ? 'var(--blue)' : 'var(--text)'}">${fmt(bUnit)}</div>
-          <div class="m-sub">${bDetail} · €${(v('b-price')/Math.max(1,v('b-rolls'))).toFixed(2)}/roll</div>
-        </div>
+  el.innerHTML = `
+    <div class="tp-results">
+      <div class="tp-metric">
+        <div class="m-label">Roll A · ${unitLabel}</div>
+        <div class="m-value" style="color:${winner==='a'?'var(--a)':'var(--text)'}">${tfmt(aUnit)}</div>
+        <div class="m-sub">${aDetail} · €${(tv('a-price')/Math.max(1,tv('a-rolls'))).toFixed(2)}/roll</div>
       </div>
-      <div class="winner-bar ${winnerClass}">${winnerText}</div>
-    `;
+      <div class="tp-metric">
+        <div class="m-label">Roll B · ${unitLabel}</div>
+        <div class="m-value" style="color:${winner==='b'?'var(--b)':'var(--text)'}">${tfmt(bUnit)}</div>
+        <div class="m-sub">${bDetail} · €${(tv('b-price')/Math.max(1,tv('b-rolls'))).toFixed(2)}/roll</div>
+      </div>
+    </div>
+    <div class="winner-bar ${winnerClass}">${winnerText}</div>
+  `;
+}
+
+tpCalc();
+
+/* ══════════════════════════════════
+   PROTEIN POWDER
+══════════════════════════════════ */
+const PRO_COLORS = [
+  { dot: '#1a5c3a' }, { dot: '#1a3a7a' }, { dot: '#7a3a1a' }, { dot: '#5a1a7a' }
+];
+const PRO_DEFAULTS = [
+  { name: 'Brand A', price: '29.99', weight: '1000', servings: '33', protein: '25' },
+  { name: 'Brand B', price: '44.99', weight: '2000', servings: '67', protein: '24' },
+];
+let proPowders = [];
+let proIdCounter = 0;
+
+function proAddPowder() {
+  if (proPowders.length >= 4) return;
+  const id = proIdCounter++;
+  const idx = proPowders.length;
+  const def = PRO_DEFAULTS[idx] || { name: 'Brand ' + (idx+1), price: '', weight: '', servings: '', protein: '' };
+  proPowders.push({ id, idx, ...def });
+  proRender();
+}
+
+function proRemove(id) {
+  proPowders = proPowders.filter(p => p.id !== id);
+  proPowders.forEach((p, i) => p.idx = i);
+  proRender();
+}
+
+function proUpdate(id, field, value) {
+  const p = proPowders.find(p => p.id === id);
+  if (p) { p[field] = value; proCalc(); }
+}
+
+function proCalc() {
+  proPowders.forEach(p => {
+    const price = parseFloat(p.price);
+    const servings = parseFloat(p.servings);
+    const protein = parseFloat(p.protein);
+    if (price > 0 && servings > 0 && protein > 0) {
+      p.totalProtein = servings * protein;
+      p.cpg = price / p.totalProtein;
+      p.valid = true;
+    } else {
+      p.valid = false; p.cpg = null;
+    }
+  });
+  proUpdateResults();
+}
+
+function proUpdateResults() {
+  const valid = proPowders.filter(p => p.valid).sort((a,b) => a.cpg - b.cpg);
+  const best = valid[0];
+
+  proPowders.forEach(p => {
+    const card = document.getElementById('procard-' + p.id);
+    if (!card) return;
+    card.classList.toggle('winner', p.valid && best && p.id === best.id && valid.length > 1);
+    const res = document.getElementById('prores-' + p.id);
+    if (!res) return;
+    if (p.valid) {
+      const isBest = best && p.id === best.id && valid.length > 1;
+      res.innerHTML = `
+        <div class="cpg" style="color:${isBest?'var(--win)':'var(--text)'}">€${p.cpg.toFixed(4)}</div>
+        <div class="cpg-label">per gram of protein</div>
+        <div class="extra">${p.totalProtein.toFixed(0)}g protein total · €${(parseFloat(p.price)/parseFloat(p.servings)).toFixed(2)}/serving</div>
+        ${isBest ? '<div class="winner-badge">best value</div>' : ''}
+      `;
+    } else {
+      res.innerHTML = '<div class="cpg-label" style="margin-top:4px">fill in all fields</div>';
+    }
+  });
+
+  const summary = document.getElementById('pro-summary');
+  if (valid.length < 2) {
+    summary.innerHTML = '<div class="empty">add at least two valid powders to compare</div>';
+    return;
   }
 
-  calculate();
+  const bestCpg = valid[0].cpg;
+  const worstCpg = valid[valid.length-1].cpg;
+  const totalSavings = ((worstCpg - bestCpg) / worstCpg * 100).toFixed(1);
+
+  const rows = valid.map((p, i) => {
+    const savings = i === 0 ? null : ((p.cpg - bestCpg) / bestCpg * 100).toFixed(1);
+    return `<li class="rank-item">
+      <span class="rank-num">${i+1}.</span>
+      <span style="width:9px;height:9px;border-radius:50%;background:${PRO_COLORS[p.idx].dot};flex-shrink:0;display:inline-block;"></span>
+      <span class="rank-name">${p.name || 'Powder ' + (p.idx+1)}</span>
+      <span class="rank-cpg">€${p.cpg.toFixed(4)}/g</span>
+      ${i === 0 ? '<span class="rank-savings">best value</span>' : `<span class="rank-more">+${savings}% more</span>`}
+    </li>`;
+  }).join('');
+
+  summary.innerHTML = `
+    <div class="summary-title">ranking — cost per gram of protein</div>
+    <ul class="rank-list">${rows}</ul>
+    <div style="margin-top:12px;font-size:0.78rem;color:var(--muted);font-family:var(--mono);">
+      choosing <strong style="color:var(--text)">${valid[0].name||'the best option'}</strong> over the most expensive saves you <strong style="color:var(--win)">${totalSavings}%</strong> per gram of protein.
+    </div>
+  `;
+}
+
+function proRender() {
+  const grid = document.getElementById('pro-grid');
+  grid.innerHTML = '';
+  const btn = document.getElementById('pro-add-btn');
+  btn.style.opacity = proPowders.length >= 4 ? '0.4' : '1';
+  btn.style.pointerEvents = proPowders.length >= 4 ? 'none' : 'auto';
+  document.getElementById('pro-count-label').textContent =
+    proPowders.length > 0 ? proPowders.length + ' / 4 powders' : '';
+
+  proPowders.forEach(p => {
+    const col = PRO_COLORS[p.idx];
+    const card = document.createElement('div');
+    card.className = 'powder-card';
+    card.id = 'procard-' + p.id;
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-title">
+          <span class="dot" style="background:${col.dot}"></span>
+          <input type="text" value="${p.name}" placeholder="Name"
+            style="border:none;background:transparent;font-family:var(--mono);font-size:0.82rem;font-weight:500;color:var(--text);width:110px;outline:none;padding:0;"
+            oninput="proUpdate(${p.id},'name',this.value)">
+        </div>
+        ${proPowders.length > 1 ? `<button class="remove-btn" onclick="proRemove(${p.id})">×</button>` : ''}
+      </div>
+      <div class="field"><label>Price (€)</label>
+        <input type="number" value="${p.price}" min="0" step="0.01" placeholder="e.g. 29.99"
+          oninput="proUpdate(${p.id},'price',this.value)"></div>
+      <div class="field"><label>Bag weight (g)</label>
+        <input type="number" value="${p.weight}" min="0" step="1" placeholder="e.g. 1000"
+          oninput="proUpdate(${p.id},'weight',this.value)"></div>
+      <div class="field"><label>Servings per bag</label>
+        <input type="number" value="${p.servings}" min="1" step="1" placeholder="e.g. 33"
+          oninput="proUpdate(${p.id},'servings',this.value)"></div>
+      <div class="field"><label>Protein per serving (g)</label>
+        <input type="number" value="${p.protein}" min="0" step="0.1" placeholder="e.g. 25"
+          oninput="proUpdate(${p.id},'protein',this.value)"></div>
+      <div class="card-result" id="prores-${p.id}">
+        <div class="cpg-label" style="margin-top:4px">fill in all fields</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  proCalc();
+}
+
+proAddPowder();
+proAddPowder();
 </script>
 </body>
 </html>
